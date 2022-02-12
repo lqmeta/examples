@@ -13,7 +13,7 @@ COPY ./packages/nginx-1.21.6 ${NGINX_PACKAGE_PATH}
 
 COPY ./scripts/ /opt/app/scripts/
 
-ADD ./src/index.html ./nginx/index.html
+ADD ./dist/index.html ./nginx/index.html
 
 
 RUN useradd -M -s /sbin/nologin nginx && \
