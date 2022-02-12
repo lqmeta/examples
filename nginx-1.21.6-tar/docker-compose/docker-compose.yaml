@@ -1,0 +1,19 @@
+version: "2"
+networks:
+  default:
+    driver: bridge
+
+services:
+  nginx-1.21.6-tar:
+    restart: always
+    # 镜像
+    image: luqiangzeng/nginx-1.21.6-tar:1.0.0
+    container_name: nginx-1.21.6-tar
+    # 将容器中Nginx根目录(`/opt/app/nginx`) 挂载至本机的目录上
+    volumes:
+      - /home/coder/app/nginx-1.21.6-tar/html:/opt/app/nginx
+    ports:
+      - "80:80"
+      # 若开启 https 可以映射443端口
+      # - "443:443"
+    command: /usr/sbin/init

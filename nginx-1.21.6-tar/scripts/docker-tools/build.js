@@ -10,7 +10,7 @@ const { execSync } = require('child_process');
 const appDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
 
-const APP_NAME = 'nginx-demo';
+const APP_NAME = 'nginx-1.21.6-tar';
 const execOpts = { stdio: 'inherit' };
 
 const handleTnginxPackage = () => {
