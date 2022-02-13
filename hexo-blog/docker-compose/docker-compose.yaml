@@ -9,9 +9,6 @@ services:
     # 镜像
     image: luqiangzeng/hexo-blog:1.0.0
     container_name: hexo-blog
-    # 将容器中Nginx根目录(`/opt/app/nginx`) 挂载至本机的目录上
-    volumes:
-      - /home/coder/app/hexo-blog/html:/opt/app/nginx
     ports:
       - "80:80"
       # 若开启 https 可以映射443端口
