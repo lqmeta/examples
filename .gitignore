@@ -108,3 +108,6 @@ nginx-1.21.6-image/packages/nginx-1.21.6
 nginx-1.21.6-tar/packages/nginx-1.21.6
 
 node-v16.14.0/packages/node-v16.14.0-linux-x64
+
+hexo-blog/packages/nginx-1.21.6
+
