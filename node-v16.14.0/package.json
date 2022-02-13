@@ -5,6 +5,11 @@
   "main": "src/app.js",
   "scripts": {
     "docker:build": "node scripts/docker-tools/build.js",
+    "compose:up": "docker-compose -f ./docker-compose/docker-compose.yaml up -d",
+    "compose:ps": "docker-compose -f ./docker-compose/docker-compose.yaml ps",
+    "compose:down": "docker-compose -f ./docker-compose/docker-compose.yaml down",
+    "compose:logs": "docker-compose -f ./docker-compose/docker-compose.yaml logs -f node-app-demo",
+    "compose:update": "docker-compose -f ./docker-compose/docker-compose.yaml up -d --no-deps --build node-app-demo",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
