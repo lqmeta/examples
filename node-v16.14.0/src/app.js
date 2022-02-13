@@ -9,7 +9,7 @@ const handler = (request, response) => {
   logger.info(remoteAddressInfo);
 
   response.writeHead(200);
-  const resMsg = `You've hit ${os.hostname()}.\n`;
+  const resMsg = `You've hit ${os.hostname()}.(v1.0.1)\n`;
   logger.info(resMsg);
   response.end(resMsg);
 }
