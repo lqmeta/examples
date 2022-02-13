@@ -1,4 +1,4 @@
-# Nginx 服务镜像
+# hexo 个人博客网站镜像
 # - https://hub.docker.com/_/centos?tab=tags&page=1
 FROM centos:centos7.9.2009
 
@@ -16,7 +16,7 @@ RUN useradd -M -s /sbin/nologin nginx
 
 COPY ./scripts/pod-tools/ /opt/app/scripts/
 
-ADD ./dist/index.html ./nginx/index.html
+ADD ./dist ./nginx
 
 
 ENTRYPOINT ["/opt/app/scripts/run.sh"]

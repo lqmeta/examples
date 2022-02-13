@@ -1,6 +1,6 @@
 'use strict';
 /**
- *  构建 Nginx 镜像
+ *  构建 hexo 个人博客网站镜像
  *    npm run docker:build
  */
 const path = require('path');
@@ -25,6 +25,18 @@ const handleTnginxPackage = () => {
   execSync(`cp -f ${resolveApp('./nginxConfig/nginx.conf')} ${nginxConfigPath}`);
 }
 handleTnginxPackage();
+
+const buildHexoDist = () => {
+  const DIST_PATH = 'dist';
+  // 清理 dist 目录内容
+  execSync(`rm -rf ${resolveApp(DIST_PATH)}`, execOpts);
+
+  // 构建编译
+  let tmpShell = `cd ${resolveApp('src')} && npm install && npm run clean`;
+  tmpShell += `&& npm run build`;
+  execSync(`${tmpShell}`, execOpts);
+}
+buildHexoDist();
 
 console.info('构建镜像:');
 execSync(
