@@ -1,0 +1,15 @@
+{
+  "name": "node-v16.14.0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "docker:build": "node scripts/docker-tools/build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "log4js": "^6.4.1"
+  },
+  "author": "issaczeng",
+  "license": "ISC"
+}
