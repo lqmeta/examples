@@ -9,9 +9,6 @@ services:
     # 镜像
     image: luqiangzeng/ueditor-1.5.0:1.0.0
     container_name: ueditor-1.5.0
-    # 将容器中Nginx根目录(`/opt/app/nginx`) 挂载至本机的目录上
-    volumes:
-      - /home/coder/app/ueditor-1.5.0/html:/opt/app/nginx
     ports:
       - "80:80"
       # 若开启 https 可以映射443端口
