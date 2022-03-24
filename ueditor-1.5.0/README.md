@@ -8,6 +8,9 @@ npm run docker:build
 
 ## 启动镜像容器
 
+http://localhost:4901/_examples/index.html
+http://localhost:4901/_examples/completeDemo.html
+
 ```sh
 docker run --name ueditor-1.5.0 -p 9090:9090 -d ueditor-1.5.0:latest /usr/sbin/init
 ```
