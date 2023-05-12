@@ -7,10 +7,10 @@ WORKDIR /opt/app
 LABEL maintainer="luqiangzeng@gmail.com"
 
 # 定义环境变量
-ENV NGINX_PACKAGE_PATH /usr/local/services/nginx-1.21.6
+ENV NGINX_PACKAGE_PATH /usr/local/services/nginx-1.24.0
 ENV NGINX_PATH /usr/local/services/nginx
 
-COPY ./packages/nginx-1.21.6 ${NGINX_PACKAGE_PATH}
+COPY ./packages/nginx-1.24.0 ${NGINX_PACKAGE_PATH}
 
 COPY ./scripts/ /opt/app/scripts/
 

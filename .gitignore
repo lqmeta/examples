@@ -104,6 +104,7 @@ typings/
 .tern-port
 
 nginx-1.21.6-image/packages/nginx-1.21.6
+nginx-1.21.6-image/packages/nginx-1.24.0
 
 nginx-1.21.6-tar/packages/nginx-1.21.6
 
