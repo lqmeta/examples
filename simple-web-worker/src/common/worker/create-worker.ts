@@ -1,4 +1,4 @@
-import workerUrl from './index?url';
+import workerUrl from './tools.worker?url';
 
 /**
  * 创建一个新的 Web Worker 实例
