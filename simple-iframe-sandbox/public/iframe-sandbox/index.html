@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iframe sandbox</title>
+</head>
+
+<body>
+</body>
+
+<!-- 公共函数 -->
+<script>
+  function svgToDataURL(svgString) {
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+  }
+</script>
+<!-- Event Handler -->
+<script>
+  /**
+   * svgToDataURL
+   */
+  function handleSvgToDataURL(res, event) {
+    if (typeof res.params.svgString !== 'string') {
+      return;
+    }
+
+    // 创建 div 元素
+    var div = document.createElement('div');
+    div.innerHTML = res.params.svgString;
+    // 将 div 插入到 body 中
+    document.body.appendChild(div);
+    // console.log('[div]', div);
+
+    var svgData = res.params.svgString;
+    var svgElements = div.getElementsByTagName('svg');
+    if (svgElements && svgElements[0]) {
+      svgData = new XMLSerializer().serializeToString(svgElements[0]);
+    }
+    // console.log('[svgElements]', svgElements, Object.prototype.toString.call(svgElements));
+
+    if (div && div.parentNode) {
+      // 使用 parentNode.removeChild() 移除 div
+      div.parentNode.removeChild(div);
+    }
+
+    // var res1 = svgToDataURL(res.params.svgString);
+    var res1 = svgToDataURL(svgData);
+    // 发送回复消息
+    event.source.postMessage(
+      {
+        code: 0,
+        callId: res.callId,
+        data: res1,
+        message: 'success',
+      },
+      event.origin
+    );
+  }
+</script>
+<script>
+  window.addEventListener('message', (event) => {
+    // if (event.origin === 'http://localhost:8188') { 
+    // }
+    console.log(event);
+    var res = event.data;
+
+    if (
+      typeof res !== 'object'
+      || typeof res.type !== 'string'
+      || typeof res.params !== 'object'
+    ) {
+      console.error('请求参数不正确.', res);
+      return;
+    }
+    console.log('[sandbox] Received message from main page:', res);
+
+    /**
+     * 注意: 此 html 的代码不会进行转义，请注意兼容性（es5）
+     **/
+    function eventHandler(res) {
+      switch (res.type) {
+        case 'svgToDataURL':
+          handleSvgToDataURL(res, event);
+          break;
+        default:
+          break;
+      }
+    }
+
+    try {
+      eventHandler(res);
+    } catch (err) {
+      console.error(err);
+    }
+  });
+</script>
+
+</html>
