@@ -1,27 +1,55 @@
 # Nginx 服务镜像
 # - https://hub.docker.com/_/centos?tab=tags&page=1
-FROM centos:centos7.9.2009
+FROM rockylinux:8
 
 WORKDIR /opt/app
 
 LABEL maintainer="luqiangzeng@gmail.com"
 
-# 定义环境变量
-ENV NGINX_PACKAGE_PATH /usr/local/services/nginx-1.24.0
-ENV NGINX_PATH /usr/local/services/nginx
+ENV NGINX_VERSION=1.29.8
+ENV NGINX_PACKAGE_PATH=/usr/local/services/nginx-${NGINX_VERSION}
+ENV NGINX_PATH=/usr/local/services/nginx
 
-COPY ./packages/nginx-1.24.0 ${NGINX_PACKAGE_PATH}
-
+# 拷贝源码和脚本
+COPY ./packages/nginx-${NGINX_VERSION} ${NGINX_PACKAGE_PATH}
 COPY ./scripts/ /opt/app/scripts/
+COPY ./dist/index.html /opt/app/nginx/index.html
 
-ADD ./dist/index.html ./nginx/index.html
+# 安装依赖 + 创建 nginx 用户 + 编译 nginx
+RUN dnf update -y && \
+    dnf install -y \
+        gcc \
+        gcc-c++ \
+        make \
+        openssl \
+        openssl-devel \
+        pcre \
+        pcre-devel \
+        zlib \
+        zlib-devel \
+        tar \
+        which && \
+    useradd -r -s /sbin/nologin nginx && \
+    cd ${NGINX_PACKAGE_PATH} && \
+    ./configure \
+        --prefix=${NGINX_PATH} \
+        --user=nginx \
+        --group=nginx \
+        --with-http_stub_status_module \
+        --with-http_ssl_module \
+        --with-http_v2_module \
+        --with-http_gzip_static_module \
+        --with-http_sub_module && \
+    make -j$(nproc) && \
+    make install && \
+    dnf clean all
 
-RUN useradd -M -s /sbin/nologin nginx && \
-  yum install -y gcc gcc-c++ openssl openssl-devel make libssl-dev libpcre3 libpcre3-dev pcre-devel && \
-  cd ${NGINX_PACKAGE_PATH} && \
-  ./configure --prefix=/usr/local/services/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_v2_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module && \
-  make && make install
-
+# nginx 配置
 COPY ./nginxConfig/nginx.conf ${NGINX_PATH}/conf/nginx.conf
+
+# 赋予脚本执行权限
+RUN chmod +x /opt/app/scripts/run.sh
+
+EXPOSE 80 443
 
 ENTRYPOINT ["/opt/app/scripts/run.sh"]
