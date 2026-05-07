@@ -3,14 +3,14 @@
 
 # 升级 nginx 1.29.8 版本
 
-1、下载 examples/nginx-image-arm/packages/nginx-1.29.8.tar.gz 包。
+1、下载 examples/nginx-image-arm/packages/nginx-1.29.8_arm.tar.gz 包。
 
 全局替换 `examples/nginx-image-arm` 目录下面的 `1.24.0` 为 `1.29.8`。
 
 ```sh
 cd nginx-image-arm/packages
 # 解压 xxx.tar.gz 包
-tar -zxvf nginx-1.29.8.tar.gz
+tar -zxvf nginx-1.29.8_arm.tar.gz
 ```
 
 
@@ -27,7 +27,9 @@ cd ./nginx-image-arm
 docker build -t nginx-demo .
 
 docker images
+docker images | grep nginx-demo
 docker ps -a
+docker ps -a | grep nginx-demo
 
 # 删除 nginx-demo 容器
 docker rm -f nginx-demo
@@ -37,11 +39,12 @@ docker rm $(docker ps -aq)
 docker rmi $(docker images -q)
 
 # 运行镜像
-docker run --name nginx-demo -p 80:80 -d nginx-demo /usr/sbin/init
+# docker run --name nginx-demo -p 80:80 -d nginx-demo /usr/sbin/init
+docker run --name nginx-demo -p 8711:80 -d nginx-demo /usr/sbin/init
   # 进入容器镜像终端:
   docker exec -it nginx-demo /bin/sh
     curl localhost
-    # 制作 nginx-1.29.8.tar.gz 免安装包
+    # 制作 nginx-1.29.8_arm.tar.gz 免安装包
     cd /usr/local/services
     # 删除需要编译构建的安装包
     rm -rf nginx-1.29.8
@@ -51,13 +54,14 @@ docker run --name nginx-demo -p 80:80 -d nginx-demo /usr/sbin/init
     # 拷贝构建好的nginx目录
     cp -TRf nginx nginx-1.29.8
     # 压缩免安装包
-    tar -zcvf nginx-1.29.8.tar.gz ./nginx-1.29.8
+    tar -zcvf nginx-1.29.8_arm.tar.gz ./nginx-1.29.8
 
-# 【devcloud】将容器nginx-demo中的 nginx-1.29.8.tar.gz 包拷贝到主机目录中
-docker cp nginx-demo:/usr/local/services/nginx-1.29.8.tar.gz /home/coder/nginx-demo
+# 【devcloud】将容器nginx-demo中的 nginx-1.29.8_arm.tar.gz 包拷贝到主机目录中
+docker cp nginx-demo:/usr/local/services/nginx-1.29.8_arm.tar.gz /home/coder/nginx-demo
 
 # 下载到本地 mac 电脑
-rsync -a root@my_devcloud_root:/home/coder/nginx-demo/nginx-1.29.8.tar.gz ~/Downloads/tmp/
+rsync -a root@cicd_arm:/home/coder/nginx-demo/nginx-1.29.8_arm.tar.gz ~/Downloads/tmp/
+# rsync -a root@my_devcloud_root:/home/coder/nginx-demo/nginx-1.29.8_arm.tar.gz ~/Downloads/tmp/
   # rm -rf ./client_body_temp ./fastcgi_temp ./proxy_temp ./scgi_temp ./uwsgi_temp
 ```
 
