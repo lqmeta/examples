@@ -34,9 +34,11 @@ docker ps -a | grep nginx-demo
 # 删除 nginx-demo 容器
 docker rm -f nginx-demo
 # 删除所有的容器
-docker rm $(docker ps -aq)
+# docker rm $(docker ps -aq)
+docker rm -f $(docker ps -aq --filter "name=nginx-demo") && docker ps
 # 删除所有的镜像
-docker rmi $(docker images -q)
+# docker rmi $(docker images -q)
+docker rmi -f $(docker images -q nginx-demo) && docker images
 
 # 运行镜像
 # docker run --name nginx-demo -p 80:80 -d nginx-demo /usr/sbin/init
@@ -44,6 +46,8 @@ docker run --name nginx-demo -p 8711:80 -d nginx-demo /usr/sbin/init
   # 进入容器镜像终端:
   docker exec -it nginx-demo /bin/sh
     curl localhost
+    /usr/local/services/nginx/sbin/nginx -v
+    /usr/local/services/nginx/sbin/nginx -t
     # 制作 nginx-1.29.8_arm.tar.gz 免安装包
     cd /usr/local/services
     # 删除需要编译构建的安装包
@@ -52,9 +56,9 @@ docker run --name nginx-demo -p 8711:80 -d nginx-demo /usr/sbin/init
     rm -rf nginx/client_body_temp nginx/fastcgi_temp nginx/proxy_temp nginx/scgi_temp nginx/uwsgi_temp
 
     # 拷贝构建好的nginx目录
-    cp -TRf nginx nginx-1.29.8
+    cp -TRf nginx nginx-1.29.8_arm
     # 压缩免安装包
-    tar -zcvf nginx-1.29.8_arm.tar.gz ./nginx-1.29.8
+    tar -zcvf nginx-1.29.8_arm.tar.gz ./nginx-1.29.8_arm
 
 # 【devcloud】将容器nginx-demo中的 nginx-1.29.8_arm.tar.gz 包拷贝到主机目录中
 docker cp nginx-demo:/usr/local/services/nginx-1.29.8_arm.tar.gz /home/coder/nginx-demo
