@@ -1,53 +1,55 @@
 # Nginx 服务镜像
 # - https://hub.docker.com/_/centos?tab=tags&page=1
-FROM centos:centos7.9.2009
+FROM rockylinux:8
 
 WORKDIR /opt/app
 
 LABEL maintainer="luqiangzeng@gmail.com"
 
-# 定义环境变量
-ENV NGINX_PACKAGE_PATH=/usr/local/services/nginx-1.29.8
+ENV NGINX_VERSION=1.29.8
+ENV NGINX_PACKAGE_PATH=/usr/local/services/nginx-${NGINX_VERSION}
 ENV NGINX_PATH=/usr/local/services/nginx
 
-COPY ./packages/nginx-1.29.8 ${NGINX_PACKAGE_PATH}
-
+# 拷贝源码和脚本
+COPY ./packages/nginx-${NGINX_VERSION} ${NGINX_PACKAGE_PATH}
 COPY ./scripts/ /opt/app/scripts/
+COPY ./dist/index.html /opt/app/nginx/index.html
 
-ADD ./dist/index.html ./nginx/index.html
-
-# CentOS 7 已于 2024-06-30 EOL，mirror.centos.org / mirrorlist.centos.org 已下线，
-# 默认 yum 源全部失效。这里把源切到 CentOS Vault 归档（用阿里云镜像，国内速度稳定）。
-# 注意：x86_64 镜像里 baseurl 是 mirror.centos.org/centos/$releasever，
-#       aarch64 镜像里则是 mirror.centos.org/altarch/$releasever，
-#       两条 sed 同时覆盖，amd64 / arm64 都能 build。
-# 同时移除 Debian 风格包名（libssl-dev / libpcre3 / libpcre3-dev），补上 nginx 编译
-# 实际需要的 zlib-devel；--without-pcre2 强制使用 pcre 1.x，避免 nginx 1.29 探测不到
-# CentOS 7 base 仓库里没有的 pcre2-devel。
-RUN set -eux \
-    && sed -i.bak \
-        -e 's|^mirrorlist=|#mirrorlist=|g' \
-        -e 's|^#\s*baseurl=http://mirror.centos.org/centos/\$releasever|baseurl=https://mirrors.aliyun.com/centos-vault/7.9.2009|g' \
-        -e 's|^#\s*baseurl=http://mirror.centos.org/altarch/\$releasever|baseurl=https://mirrors.aliyun.com/centos-vault/altarch/7.9.2009|g' \
-        /etc/yum.repos.d/CentOS-Base.repo \
-    && yum clean all \
-    && yum makecache \
-    && useradd -M -s /sbin/nologin nginx \
-    && yum install -y gcc gcc-c++ make pcre-devel openssl-devel zlib-devel \
-    && cd ${NGINX_PACKAGE_PATH} \
-    && ./configure --prefix=${NGINX_PATH} \
+# 安装依赖 + 创建 nginx 用户 + 编译 nginx
+RUN dnf update -y && \
+    dnf install -y \
+        gcc \
+        gcc-c++ \
+        make \
+        openssl \
+        openssl-devel \
+        pcre \
+        pcre-devel \
+        zlib \
+        zlib-devel \
+        tar \
+        which && \
+    useradd -r -s /sbin/nologin nginx && \
+    cd ${NGINX_PACKAGE_PATH} && \
+    ./configure \
+        --prefix=${NGINX_PATH} \
+        --user=nginx \
+        --group=nginx \
         --with-http_stub_status_module \
         --with-http_ssl_module \
         --with-http_v2_module \
         --with-http_gzip_static_module \
-        --with-ipv6 \
-        --with-http_sub_module \
-        --without-pcre2 \
-    && make -j"$(nproc)" \
-    && make install \
-    && yum clean all \
-    && rm -rf /var/cache/yum
+        --with-http_sub_module && \
+    make -j$(nproc) && \
+    make install && \
+    dnf clean all
 
+# nginx 配置
 COPY ./nginxConfig/nginx.conf ${NGINX_PATH}/conf/nginx.conf
+
+# 赋予脚本执行权限
+RUN chmod +x /opt/app/scripts/run.sh
+
+EXPOSE 80 443
 
 ENTRYPOINT ["/opt/app/scripts/run.sh"]
