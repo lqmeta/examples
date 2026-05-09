@@ -35,10 +35,11 @@ docker ps -a | grep nginx-demo
 docker rm -f nginx-demo
 # 删除所有的容器
 # docker rm $(docker ps -aq)
-docker rm -f $(docker ps -aq --filter "name=nginx-demo") && docker ps
+docker rm -f $(docker ps -aq --filter "name=nginx-demo") && docker ps | grep nginx-demo
 # 删除所有的镜像
 # docker rmi $(docker images -q)
-docker rmi -f $(docker images -q nginx-demo) && docker images
+# docker rmi -f $(docker images -q nginx-demo) && docker images
+docker rmi -f $(docker images -q nginx-demo) && docker images | grep nginx-demo
 
 # 运行镜像
 # docker run --name nginx-demo -p 80:80 -d nginx-demo /usr/sbin/init
